@@ -31,4 +31,4 @@ case $1 in
 esac
 
 python3 -m gokigen draw -o output.png $2 <(echo "$out")
-xdg-open output.png
+chafa -f sixel output.png
