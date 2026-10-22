@@ -1,5 +1,3 @@
-:- [read].
-
 % gokigen(+Constraints, -SolveBoard)
 gokigen(Constraints, SolvedBoard) :-
     length(Constraints, IntRows), % Intersection rows
@@ -27,22 +25,21 @@ gokigen(Constraints, SolvedBoard) :-
     % Backtrack over the cells that can not be easily deduced.
     backtrack(Constraints, DS, Intersections, SolvedBoard).
 
-% TODO: Replace pairs with - notation.
 backtrack([_], [_], [_], []).
 backtrack([TopC, BotC | RestC], [TopDS, BotDS | RestDS], [TopI, BotI | RestI], [SolvedRow | RestBoard]) :-
-    backtrack_row(rp(TopC, BotC), rp(TopDS, BotDS), rp(TopI, BotI), SolvedRow),
+    backtrack_row(TopC-BotC, TopDS-BotDS, TopI-BotI, SolvedRow),
     backtrack([BotC | RestC], [BotDS | RestDS], [BotI | RestI], RestBoard).
 
 backtrack_row(
-    rp([_], [_]),
-    rp([_], [_]),
-    rp([_], [_]),
+    [_]-[_],
+    [_]-[_],
+    [_]-[_],
     []
 ).
 backtrack_row(
-    rp([TLC, TRC | TopC], [BLC, BRC | BotC]),
-    rp([TLDS, TRDS | TopDS], [BLDS, BRDS | BotDS]),
-    rp([TLI, TRI | TopI], [BLI, BRI | BotI]),
+    [TLC, TRC | TopC]-[BLC, BRC | BotC],
+    [TLDS, TRDS | TopDS]-[BLDS, BRDS | BotDS],
+    [TLI, TRI | TopI]-[BLI, BRI | BotI],
     [Slant | RestSolvedRow]
 ) :-
     TLI = i(_, _, _, TLV),
@@ -58,9 +55,9 @@ backtrack_row(
     maplist(force_intersection, [TLC, TRC, BLC, BRC], [TLI, TRI, BLI, BRI]),
 
     backtrack_row(
-        rp([TRC | TopC], [BRC | BotC]),
-        rp([TRDS | TopDS], [BRDS | BotDS]),
-        rp([TRI | TopI], [BRI | BotI]),
+        [TRC | TopC]-[BRC | BotC],
+        [TRDS | TopDS]-[BRDS | BotDS],
+        [TRI | TopI]-[BRI | BotI],
         RestSolvedRow
     ).
 
@@ -172,6 +169,7 @@ force(Constraint, _, Constraint, Edges) :-
     maplist(=(1), Vars).
 force(_, _, _, _).
 
+:- [read].
 main :-
     read_constraints(Constraints),
     gokigen(Constraints, Board),

@@ -24,17 +24,17 @@ gokigen(Constraints, SolvedBoard) :-
 
 backtrack([_], [_], []).
 backtrack([TopDS, BotDS | RestDS], [TopI, BotI | RestI], [SolvedRow | RestBoard]) :-
-    backtrack_row(rp(TopDS, BotDS), rp(TopI, BotI), SolvedRow),
+    backtrack_row(TopDS-BotDS, TopI-BotI, SolvedRow),
     backtrack([BotDS | RestDS], [BotI | RestI], RestBoard).
 
 backtrack_row(
-    rp([_], [_]),
-    rp([_], [_]),
+    [_]-[_],
+    [_]-[_],
     []
 ).
 backtrack_row(
-    rp([TLDS, TRDS | TopDS], [BLDS, BRDS | BotDS]),
-    rp([TLI, TRI | TopI], [BLI, BRI | BotI]),
+    [TLDS, TRDS | TopDS]-[BLDS, BRDS | BotDS],
+    [TLI, TRI | TopI]-[BLI, BRI | BotI],
     [Slant | RestSolvedRow]
 ) :-
     TLI = i(_, _, _, TLV),
@@ -45,8 +45,8 @@ backtrack_row(
     place(Slant, sets(TLDS, TRDS, BLDS, BRDS), vals(TLV, TRV, BLV, BRV)),
 
     backtrack_row(
-        rp([TRDS | TopDS], [BRDS | BotDS]),
-        rp([TRI | TopI], [BRI | BotI]),
+        [TRDS | TopDS]-[BRDS | BotDS],
+        [TRI | TopI]-[BRI | BotI],
         RestSolvedRow
     ).
 
@@ -113,7 +113,6 @@ unify_edges_row([TLI, TRI | TopRest], [BLI, BRI | BotRest]) :-
     unify_edges_row([TRI | TopRest], [BRI | BotRest]).
 
 :- [read].
-
 main :-
     read_constraints(Constraints),
     gokigen(Constraints, Board),

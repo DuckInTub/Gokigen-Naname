@@ -1,5 +1,6 @@
 % constraint(Row, Col, Deg): True iff there is a constraint at intersection (Row, Col) of degree Deg.
-% NOTE: Defined and important from a problem file.
+% row(R), cols(C): defines how many rows/cols of intersections the problem has.
+% NOTE: All defined and important from a problem file.
 
 cell(0..R-1, 0..C-1) :- rows(R), cols(C).
 intersection(0..R, 0..C) :- rows(R), cols(C).
@@ -15,10 +16,17 @@ touches(R, C, R+1, C+1) :- slant(backslash, R, C).
 touches(R, C, R+1, C) :- slant(slash, R, C).
 touches(R, C, R, C+1) :- slant(slash, R, C).
 
+
 :- 
     constraint(ConR, ConC, Deg),
     #count {R, C: touches(R, C, ConR, ConC)} != Deg.
 
+
+
+% Loop removal:
+% To prevent trivial loops for undirected edges ("U-turns" like A -> B -> A)
+% track the cell/slant/edge we just took.
+% In the path check this forces traversal in the "same direction".
 
 edge(R1, C1, R2, C2, CR, CC) :-
     touches(CR, CC, R1, C1),
